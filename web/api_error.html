@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>API error</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        b,code,h1,h3,p,pre{padding:0;border:0;font:inherit;font-size:100%;vertical-align:baseline;margin:.7em 0}body{width:600px;margin:0 auto;background:#fcfcfc;color:#545454;text-rendering:optimizeLegibility;font-family:AvenirNext-Regular}.note-wrapper{max-width:46em;margin:0 auto;padding:1.57143em 3.14286em}h1{font-family:AvenirNext-Medium;color:#333;font-size:1.6em;line-height:1.3em;margin-bottom:.78571em}h3{font-family:AvenirNext-Medium;color:#333;font-size:1.15em;line-height:1em;margin-bottom:.47143em}hr{height:1px;border:0;background-color:#dedede;margin:-1px auto 1.57143em auto}b{font-weight:bolder}code{font-family:Menlo-Regular}.code-inline{background:#fff;border:solid 1px #dedede;padding:.2em .5em;font-size:15px}.code-multiline{width:160px;display:block;background:#fff;border:solid 1px #dedede;padding:.7em 1em;font-size:.9em;overflow-x:auto}.examples{width:390px;text-align:center;margin:45px auto 0}.example-left{float:left}.example-right{float:right}
+    </style>
+</head>
+
+<body>
+    <div class="note-wrapper">
+        <h1>API error</h1>
+        <p>Requested title-id: <b id="invalid-url">/</b></p>
+        <p>Response code: <b>404</b></p>
+        <hr>
+        <div style="text-align: center">
+            Expected URI format: <code class="code-inline" id="uri"></code>
+        </div><br><hr>
+        <div class="examples">
+            <div class="example-left">
+                <b>PSN</b> downloaded games
+                <code class="code-multiline">
+                    NPUBXXXXX (US)<br>
+                    NPEBXXXXX (EU)<br>
+                    NPJBXXXXX (JP)
+                </code>
+            </div>
+            <div class="example-right">
+                <b>BLU-RAY</b> game discs
+                <code class="code-multiline">
+                    BLUSXXXXX (US)<br>
+                    BLESXXXXX (EU)<br>
+                    BLJMXXXXX (JP)
+                </code>
+            </div>
+            <i>valid title-id examples</i>
+        </div>
+    </div>
+    <script>
+        const url = window.location.href;
+        invalid = url.split('/').slice(3, url.length);
+        document.getElementById('invalid-url').innerHTML += invalid.join('/');
+        const uri = new URL(url);
+        if (uri.port === '')
+            document.getElementById('uri').innerHTML = uri.hostname+'/'+"<b>titleid</b>";
+        else
+            document.getElementById('uri').innerHTML = uri.hostname+':'+uri.port +'/'+"<b>titleid</b>";
+    </script>
+</body>
+
+</html>
