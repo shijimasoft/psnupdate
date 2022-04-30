@@ -29,9 +29,9 @@ class Update
     (size.to_f / 1_000_000).round 2
   end
 
-  def json_updates
+  def updates
     data = xml_updates
-    { title_id: @title_id, title: nil, updates: [] }.to_json if data.nil?
+    { title_id: @title_id, title: nil, updates: [] } if data.nil?
 
     data = Nokogiri::XML(data)
     updates = []
@@ -45,6 +45,6 @@ class Update
       ]
     end
 
-    { title_id: @title_id, title: data.xpath('//TITLE').text, updates: updates }.to_json
+    { title_id: @title_id, title: data.xpath('//TITLE').text, updates: updates }
   end
 end

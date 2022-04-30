@@ -16,24 +16,24 @@ def get_updates(title_id)
   end
 
   psn = Update.new(title_id)
-  psn.json_updates
+  psn.updates
 end
 
 get '/:title_id' do
   content_type :json
   title_id = params[:title_id].to_s
 
-  get_updates title_id
+  get_updates(title_id).to_json
 end
 
 get '/:title_id/newest' do
   content_type :json
   title_id = params[:title_id].to_s
 
-  update = JSON.parse get_updates(title_id)
-  update['updates'] = update['updates'].last if update['title'] != ''
+  updates = get_updates title_id
+  updates[:updates] = updates[:updates].last if updates[:title] != ''
 
-  update.to_json
+  updates.to_json
 end
 
 get '/*/*' do
