@@ -1,4 +1,5 @@
-source "https://rubygems.org"
+source 'https://rubygems.org'
 
 gem 'nokogiri'
+gem 'sqlite3'
 gem 'sinatra'

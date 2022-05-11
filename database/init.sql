@@ -1,0 +1,14 @@
+CREATE TABLE IF NOT EXISTS games (
+    title_id VARCHAR(9) NOT NULL PRIMARY KEY,
+    title VARCHAR(255) NULL
+);
+
+CREATE TABLE IF NOT EXISTS updates (
+    sha1 VARCHAR(40) NOT NULL PRIMARY KEY,
+    url VARCHAR(255) NOT NULL,
+    version FLOAT UNSIGNED NOT NULL,
+    min_firmware FLOAT UNSIGNED NOT NULL,
+    size_mb DOUBLE UNSIGNED NOT NULL,
+    title_id VARCHAR(9) NOT NULL,
+    FOREIGN KEY (title_id) REFERENCES games(title_id)
+);
