@@ -1,5 +1,6 @@
 require 'sqlite3'
 
+# Save PSN game updates in a SQLite3 database
 class PSDatabase
   def initialize
     @database = SQLite3::Database.open 'database/psdb.sqlite'
@@ -12,9 +13,18 @@ class PSDatabase
     @buffer = { title_id: nil, title: nil, updates: [] }
   end
 
+  def flush_buffer
+    flush = @buffer
+    @buffer = { title_id: nil, title: nil, updates: [] }
+    return flush
+  end
+
+  def registered?(title_id)
+    @database.get_first_value('SELECT COUNT(*) FROM games WHERE title_id = ?', title_id).to_i == 1
+  end
+
   def search(title_id)
-    count = @database.get_first_value 'SELECT COUNT(*) FROM games WHERE title_id = ?', title_id
-    return nil if count.to_i != 1
+    return nil unless registered? title_id
 
     game = @database.query 'SELECT * FROM games WHERE title_id = ?', title_id
     game = game.next
@@ -32,5 +42,20 @@ class PSDatabase
         sha1: update['sha1']
       ]
     end
+
+    return flush_buffer
+  end
+
+  def save(title_id, data)
+    return if (registered? title_id) || data[:title] == ''
+
+    @database.execute "INSERT INTO games VALUES ('#{title_id}', '#{data[:title]}')"
+
+    unless data[:updates].empty?
+      data[:updates].each do |update|
+        @database.execute "INSERT INTO updates VALUES ('#{update[:sha1]}', '#{update[:url]}', #{update[:version]}, #{update[:min_firmware]}, #{update[:size_mb]}, '#{title_id}')"
+      end
+    end
+
   end
 end

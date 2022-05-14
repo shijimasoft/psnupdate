@@ -1,9 +1,13 @@
 require_relative 'update'
+require_relative 'psdatabase'
+
 require 'json'
 require 'sinatra'
 
 # API web-server settings
 set :port, 80
+
+psdatabase = PSDatabase.new
 
 get '/' do
   send_file 'web/index.html'
@@ -23,17 +27,32 @@ get '/:title_id' do
   content_type :json
   title_id = params[:title_id].to_s
 
-  get_updates(title_id).to_json
+  psquery = psdatabase.search title_id
+
+  if psquery.nil?
+    data = get_updates title_id
+    psdatabase.save(title_id, data)
+    return data.to_json
+  else
+    psquery.to_json
+  end
 end
 
 get '/:title_id/newest' do
   content_type :json
   title_id = params[:title_id].to_s
 
-  updates = get_updates title_id
-  updates[:updates] = updates[:updates].last if updates[:title] != ''
+  psquery = psdatabase.search title_id
 
-  updates.to_json
+  if psquery.nil?
+    data = get_updates title_id
+    psdatabase.save(title_id, data)
+    data[:updates] = data[:updates].last if data[:title] != ''
+    return data.to_json
+  else
+    psquery[:updates] = psquery[:updates].last if psquery[:title] != ''
+    psquery.to_json
+  end
 end
 
 get '/*/*' do

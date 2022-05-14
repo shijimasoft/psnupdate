@@ -1,0 +1,4 @@
+// Non DB cached request - Time: 1045ms
+// DB cached request - Time: 15ms
+
+GET localhost:80/NPJB00769
