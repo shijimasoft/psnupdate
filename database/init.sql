@@ -1,6 +1,7 @@
 CREATE TABLE IF NOT EXISTS games (
     title_id VARCHAR(9) NOT NULL PRIMARY KEY,
-    title VARCHAR(255) NULL
+    title VARCHAR(255) NULL,
+    has_update TINYINT(1) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS updates (

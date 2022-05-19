@@ -32,15 +32,17 @@ class PSDatabase
     @buffer[:title_id] = game['title_id']
     @buffer[:title] = game['title']
 
-    updates = @database.execute 'SELECT * FROM updates WHERE title_id = ?', title_id
-    updates.each do |update|
-      @buffer[:updates] += [
-        version: update['version'].to_f,
-        min_firmware: update['min_firmware'].to_f,
-        size_mb: update['size_mb'].to_f,
-        url: update['url'],
-        sha1: update['sha1']
-      ]
+    if game['has_update'].to_i == 1
+      updates = @database.execute 'SELECT * FROM updates WHERE title_id = ?', title_id
+      updates.each do |update|
+        @buffer[:updates] += [
+          version: update['version'].to_f,
+          min_firmware: update['min_firmware'].to_f,
+          size_mb: update['size_mb'].to_f,
+          url: update['url'],
+          sha1: update['sha1']
+        ]
+      end
     end
 
     return flush_buffer
@@ -49,13 +51,13 @@ class PSDatabase
   def save(title_id, data)
     return if (registered? title_id) || data[:title] == ''
 
-    @database.execute "INSERT INTO games VALUES ('#{title_id}', '#{data[:title]}')"
+    puts data[:updates]
+    @database.execute "INSERT INTO games VALUES ('#{title_id}', '#{data[:title]}', #{data[:updates].empty? ? '0' : '1'})"
 
-    unless data[:updates].empty?
-      data[:updates].each do |update|
-        @database.execute "INSERT INTO updates VALUES ('#{update[:sha1]}', '#{update[:url]}', #{update[:version]}, #{update[:min_firmware]}, #{update[:size_mb]}, '#{title_id}')"
-      end
+    return if data[:updates].empty?
+
+    data[:updates].each do |update|
+      @database.execute "INSERT INTO updates VALUES ('#{update[:sha1]}', '#{update[:url]}', #{update[:version]}, #{update[:min_firmware]}, #{update[:size_mb]}, '#{title_id}')"
     end
-
   end
 end
