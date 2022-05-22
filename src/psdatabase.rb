@@ -4,6 +4,7 @@ require 'sqlite3'
 class PSDatabase
   def initialize
     @database = SQLite3::Database.open 'database/psdb.sqlite'
+    @complete = SQLite3::Database.open 'database/complete.sqlite'
     @database.results_as_hash = true
     if File.exist? 'database/init.sql'
       File.read('database/init.sql').split(';').each do |query|
@@ -51,7 +52,6 @@ class PSDatabase
   def save(title_id, data)
     return if (registered? title_id) || data[:title] == ''
 
-    puts data[:updates]
     @database.execute "INSERT INTO games VALUES ('#{title_id}', '#{data[:title]}', #{data[:updates].empty? ? '0' : '1'})"
 
     return if data[:updates].empty?

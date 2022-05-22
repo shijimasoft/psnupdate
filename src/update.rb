@@ -2,11 +2,13 @@ require 'net/https'
 require 'uri'
 require 'nokogiri'
 require 'json'
+require 'sqlite3'
 
 # Retrieve PS3 game updates from the PSN server
 class Update
   def initialize(title_id)
     @title_id = title_id
+    @complete = SQLite3::Database.open 'database/complete.sqlite'
   end
 
   def xml_updates
@@ -21,7 +23,7 @@ class Update
     get = Net::HTTP::Get.new(xml_uri.request_uri)
     data = psn_client.request(get)
 
-    data.code.to_i == 200 ? data.body : nil
+    data.code.to_i == 200 ? data.body : ''
   end
 
   # Bytes to MBytes
@@ -31,7 +33,11 @@ class Update
 
   def updates
     data = xml_updates
-    { title_id: @title_id, title: nil, updates: [] } if data.nil?
+
+    if data == ''
+      title = @complete.get_first_value "SELECT title FROM games WHERE title_id = '#{@title_id}'"
+      return { title_id: @title_id, title: title == '' ? nil : title, updates: [] }
+    end
 
     data = Nokogiri::XML(data)
     updates = []
