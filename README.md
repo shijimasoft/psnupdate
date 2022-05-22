@@ -8,7 +8,7 @@
 
 ```sh
 cd psnupdate/
-# install nokogiri and sinatra
+# install nokogiri, sqlite3 and sinatra
 bundle install
 ```
 
