@@ -3,11 +3,10 @@ require 'sqlite3'
 # Save PSN game updates in a SQLite3 database
 class PSDatabase
   def initialize
-    @database = SQLite3::Database.open 'database/psdb.sqlite'
-    @complete = SQLite3::Database.open 'database/complete.sqlite'
+    @database = SQLite3::Database.open '../database/psdb.sqlite'
     @database.results_as_hash = true
-    if File.exist? 'database/init.sql'
-      File.read('database/init.sql').split(';').each do |query|
+    if File.exist? '../database/init.sql'
+      File.read('../database/init.sql').split(';').each do |query|
         @database.execute query
       end
     end
@@ -50,7 +49,7 @@ class PSDatabase
   end
 
   def save(title_id, data)
-    return if (registered? title_id) || data[:title] == ''
+    return if (registered? title_id) || data[:title].nil?
 
     @database.execute "INSERT INTO games VALUES ('#{title_id}', '#{data[:title]}', #{data[:updates].empty? ? '0' : '1'})"
 

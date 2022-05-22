@@ -8,7 +8,7 @@ require 'sqlite3'
 class Update
   def initialize(title_id)
     @title_id = title_id
-    @complete = SQLite3::Database.open 'database/complete.sqlite'
+    @complete = SQLite3::Database.open '../database/complete.sqlite'
   end
 
   def xml_updates
